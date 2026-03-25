@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/campuslogo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="{{url_for('static', filename='flash.js')}}"></script>
+</head>
+
+<body>
+    <!-------------------------------------------- Header / Navbar -------------------------------------------------->
+    <header>
+        <nav>
+            <!-- Logo -->
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/campuslogo2.png') }}" alt="Logo" height="40">
+            </div>
+
+            <!-- Navigation Links -->
+             <div class="nav-links">
+                <a href="{{ url_for('manage_events') }}">View Events</a>
+               <a href="{{url_for('admin_appointments')}}"class="{% if request.endpoint == 'admin_appointments' %}active{% endif %}">Appointments</a>
+                <a href="{{ url_for('admin_calendar_view') }}">Calendar View</a>
+                <a href="{{url_for('admin_about_us')}}"class = "{% if request.endpoint == 'admin_about_us' %} active {% endif %}">About</a>
+
+            </div>
+
+          
+
+            <!-- Right Side (extra space if needed) -->
+            <div class="nav-links-right"></div>
+
+            <!-------------------------------- Navbar Profile Icon -------------------------------->
+            <div class="profile-icon" onclick="toggleProfile()">
+                {% if user.profile_pic %}
+                    <img src="{{ url_for('static', filename='img_profile/' + user['profile_pic']) }}" 
+                         alt="Profile Picture" 
+                         class="navbar-profile-img">
+                {% else %}
+                    <div class="navbar-profile-img placeholder">
+                        <i class="bi bi-person"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <!-------------------------------------------- Profile Info Card -------------------------------------------------->
+    <div class="profile-card" id="profileCard">
+        <center>
+            {% if user.profile_pic %}
+                <img src="{{ url_for('static', filename='img_profile/' + user['profile_pic']) }}" 
+                     alt="Profile Picture" 
+                     class="profile-card-img">
+            {% else %}
+                <div class="profile-card-img placeholder">
+                    <i class="bi bi-person"></i> 
+                </div>
+            {% endif %}
+            <p><b>Welcome</b> {{ user.full_name }}</p>
+        </center>
+        <br>
+
+        <a href="{{url_for('admin_info')}}"> 
+            <i class="bi bi-person" style="color:black; font-size:18px; margin-right:6px;"></i>Admin Profile
+        </a>
+        <a href="{{url_for('admin_update_password')}}"> 
+            <i class="bi bi-key" style="color:black; font-size:18px; margin-right:6px;"></i>Change Password
+        </a>
+        
+        <br><br>
+        <a href="{{ url_for('logout') }}"> 
+            <i class="bi bi-box-arrow-left" style="color:black; font-size:18px; margin-right:6px;"></i>Logout
+        </a>
+    </div>
+
+    <!-------------------------------------------- Side Bar -------------------------------------------------->
+
+    <div class="side-bar">
+        <a href="{{url_for('admin_dashboard')}}"
+            class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+            <i class="bi bi-speedometer2" style="color:black; font-size:18px; margin-right:6px;"></i>Dashboard
+        </a>
+        <a href="{{url_for('admin_appointments')}}"
+            class="{% if request.endpoint == 'admin_appointments' %}active{% endif %}">
+            <i class="bi bi-calendar3" style="color:black; font-size:18px; margin-right:6px;"></i>Manage Appointments
+        </a>
+        <a href="{{url_for('admin_recent_appointments')}}">
+            <i class="bi bi-clock-history" style="color:black; font-size:18px; margin-right:6px;"></i>Recent
+        </a>
+        <a href="{{url_for('admin_calendar_view')}}">
+            <i class="bi bi-calendar" style="color:black; font-size:18px; margin-right:6px;"></i>Calendar View
+        </a>
+
+        <div class="log-out">
+            <a href="{{ url_for('logout') }}"> 
+                <i class="bi bi-box-arrow-left" style="color:black; font-size:18px; margin-right:6px;"></i>Logout
+            </a>
+        </div>
+    </div>
+
+<!-------------------------------------------- Appointments -------------------------------------------------->
+<main class="appointments-section">
+  <div class="appointments-container">
+    <h2 class="page-title"><i class="bi bi-calendar3"></i> Manage Appointments</h2>
+
+    <div class="appointments-card">
+      <table class="appointments-table">
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Appointment Date & Time</th>
+            <th>Course Program</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in appointments %}
+          <tr>
+            <td>{{ a.student_name }}</td>
+            <td>{{ a.appointment_date.strftime('%Y-%m-%d %I:%M %p') }}</td>
+            <td>{{ a.student_course }}</td>
+            <td>
+              <span class="status {{ a.status|lower }}">{{ a.status }}</span>
+            </td>
+            <td class="actions">
+              {% if a.status == 'Pending' %}
+              <form method="POST" action="{{ url_for('approve_appointment', id=a.appointment_id) }}" style="display:inline;">
+                <button class="btn-approve"><i class="bi bi-check2-circle"></i> Approve</button>
+              </form>
+              <form method="POST" action="{{ url_for('reject_appointment', id=a.appointment_id) }}" style="display:inline;">
+                <button class="btn-reject"><i class="bi bi-x-circle"></i> Reject</button>
+              </form>
+              {% else %}
+              <button class="btn-disabled" disabled>{{ a.status }}</button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+  
+
+    <!---------------- Flash Messages ------------------->
+    <br><br>
+    <center>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div id="flash-message">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </center>
+</body>
+</html>

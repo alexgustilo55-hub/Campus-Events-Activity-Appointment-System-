@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Events</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/campuslogo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="{{url_for('static', filename='flash.js')}}"></script>
+</head>
+
+<body>
+    <!-- ====================== HEADER / NAVIGATION ====================== -->
+    <header>
+        <nav>
+            <!-- Logo -->
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/campuslogo2.png') }}" alt="Logo" height="40">
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="nav-links">
+                <a href="{{url_for('home')}}">Home</a>
+                <a href="{{url_for('u_event')}}"
+                   class="{% if request.endpoint == 'u_event' %}active{% endif %}">
+                   Events
+                </a>
+                <a href="{{url_for('calendar_view')}}">Calendar</a>
+                <a href="{{url_for('about_us')}}">About</a>
+            </div>
+
+           <!-- ======= Notification Wrapper ======= -->
+<div class="notification-wrapper">
+    <!-- Bell Icon -->
+    <div class="notification-icon" id="notifBell" onclick="toggleNotif()">
+        <i class="bi bi-bell"></i>
+        {% if unread_count > 0 %}
+    <span class="badge" id="notifCount">{{ unread_count }}</span>
+        {% endif %}
+
+    </div>
+
+    <!-- Dropdown -->
+    <div class="notification-dropdown" id="notifDropdown">
+        <div class="notif-header">Notifications</div>
+
+        {% if notifications and notifications|length > 0 %}
+            {% for notif in notifications %}
+                <div class="notif-item {% if not notif['is_read'] %}unread{% endif %}">
+                    {{ notif['message'] }}
+                    <div class="notif-time">
+                        {% if notif['created_at'] %}
+                            {{ notif['created_at'].strftime('%b %d, %Y %I:%M %p') }}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="notif-item empty">No notifications yet.</div>
+        {% endif %}
+
+        <div class="notif-footer">
+            <form action="{{url_for('delete_all_notifications')}}" method="post" style="display:inline;">
+        <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete all notifications?')">
+            Delete all
+        </button>
+            </form>
+            <form action="{{url_for('mark_all_read')}}" method="post">
+                <button type="submit" class="mark-read-btn">Mark all as read</button>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- ======= End of Notification ======= -->
+
+            <!-- Profile Icon -->
+            <div class="profile-icon" onclick="toggleProfile()">
+                {% if user.profile_pic %}
+                    <img src="{{ url_for('static', filename='img_profile/' + user['profile_pic']) }}" 
+                         alt="Profile Picture" 
+                         class="navbar-profile-img">
+                {% else %}
+                    <div class="navbar-profile-img placeholder">
+                        <i class="bi bi-person"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    
+    <!-- ====================== PROFILE CARD ====================== -->
+     
+    <div class="profile-card" id="profileCard">
+        <center>
+            {% if user.profile_pic %}
+                <img src="{{ url_for('static', filename='img_profile/' + user['profile_pic']) }}" 
+                     alt="Profile Picture" 
+                     class="profile-card-img">
+            {% else %}
+                <div class="profile-card-img placeholder">
+                    <i class="bi bi-person"></i> 
+                </div>
+            {% endif %}
+            <p><b>Welcome</b> {{ user.full_name }}</p>
+        </center>
+        <br>
+
+        <!-- Profile Links -->
+        <a href="{{url_for('user_info')}}"> 
+            <i class="bi bi-person" style="color:black; font-size:18px; margin-right:6px;"></i>
+            User Profile
+        </a>
+        <a href="{{url_for('update_password')}}"> 
+            <i class="bi bi-key" style="color:black; font-size:18px; margin-right:6px;"></i>
+            Change Password
+        </a>
+        <a href=""></a>
+        
+        <center>
+            <br><br>
+            <a href="{{ url_for('logout') }}"> 
+                <i class="bi bi-box-arrow-left" style="color:black; font-size:18px; margin-right:6px;"></i>
+                Logout
+            </a>
+        </center>
+    </div>
+        
+<!-- ====================== MAIN CONTENT ====================== -->
+<section class="event-hero">
+    <div class="hero-content">
+        <h1>Together, we build memories and milestones through campus events</h1>
+        <p>Your gateway to seamless appointment scheduling.</p>
+    </div>
+</section>
+    
+    <!-- ====================== EVENTS PAGE ====================== -->
+    <div class="main-content">
+        <h2>Events</h2>
+
+        <div class="event-grid">
+            {% for event in events %}
+                <div class="event-card">
+                    <!-- Event Image -->
+                    {% if event.event_image %}
+                        <img src="{{ url_for('static', filename='img_events/' ~ event.event_image) }}" 
+                             alt="Event Image" class="event-img">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img_events/default.jpg') }}" 
+                             alt="Default Event Image" class="event-img">
+                    {% endif %}
+
+                    <div class="event-body">
+                        <!-- Event Title -->
+                        <h4>{{ event.event_name }}</h4>
+
+                        <!-- Event Date & Time -->
+                        <div class="event-datetime">
+                            <span class="date">
+                                <i class="bi bi-calendar-event"></i> {{ event.event_date }}
+                            </span>
+                            <span class="time">
+                                <i class="bi bi-clock"></i> {{ event.start_time }} - {{ event.end_time }}
+                            </span>
+                        </div>
+
+                        <!-- Event Location -->
+                        <p>
+                            <i class="bi bi-geo-alt"></i> {{ event.location }}
+                        </p>
+
+                        <!-- Event Type -->
+                        <p>
+                            <i class="bi bi-tag"></i> {{ event.event_type }}
+                        </p>
+
+                        <!-- Buttons -->
+                        <div class="btn-group">
+                            <a href="{{ url_for('view_details', event_id=event['event_id']) }}" 
+                               class="btn-view">
+                                View Details
+                            </a>
+                            <a href="{{url_for('user_register')}}" class="btn-register">Register</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p>No events available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ====================== FLASH MESSAGES ====================== -->
+    <br><br>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="flash-message">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+<!-- ===================== Footer ========================== -->
+
+<footer class="site-footer">
+    <div class="footer-container">
+        <h2>Campus Event & Activity Appointment System</h2>
+        <p>Developed by <strong>Ecela Group</strong> from <strong>BSIT 2-2</strong></p>
+        <p><strong>University of Iloilo</strong></p>
+        <hr>
+        <p class="rights">© 2025 All Rights Reserved</p>
+    </div>
+</footer>
+
+</body>
+</html>

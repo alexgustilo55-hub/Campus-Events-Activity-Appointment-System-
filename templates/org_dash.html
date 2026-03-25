@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/campuslogo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='org.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="{{url_for('static', filename='flash.js')}}"></script>
+</head>
+
+<body>
+    <!-- ================= HEADER / NAVBAR ================= -->
+    <header>
+        <nav>
+            <!-- Logo -->
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/campuslogo2.png') }}" alt="Logo" height="40">
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="nav-links">
+                <a href="{{ url_for('organizer_manage_events') }}">Manage Events</a>
+                <a href="{{url_for('org_calendar_view')}}">Calendar View</a>
+                <a href="{{url_for('org_about_us')}}"class = "{% if request.endpoint == 'about_us' %} active {% endif %}">About</a>
+            </div>
+
+            <!-- Right Side -->
+            <div class="nav-links-right"></div>
+
+            <!-- Profile Icon -->
+            <div class="profile-icon" onclick="toggleProfile()">
+                {% if user.profile_pic %}
+                    <img src="{{ url_for('static', filename='img_profile/' + user['profile_pic']) }}" 
+                         alt="Profile Picture" 
+                         class="navbar-profile-img">
+                {% else %}
+                    <div class="navbar-profile-img placeholder">
+                        <i class="bi bi-person"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <!-------------------------------------------- Profile Info Card -------------------------------------------------->
+    <div class="profile-card" id="profileCard">
+        <center>
+            {% if user.profile_pic %}
+                <img src="{{ url_for('static', filename='img_profile/' + user['profile_pic']) }}" 
+                     alt="Profile Picture" 
+                     class="profile-card-img">
+            {% else %}
+                <div class="profile-card-img placeholder">
+                    <i class="bi bi-person"></i> 
+                </div>
+            {% endif %}
+            <p><b>Welcome</b> {{ user.full_name }}</p>
+        </center>
+        <br>
+
+        <a href="{{url_for('organizer_info')}}"> 
+            <i class="bi bi-person" style="color:black; font-size:18px; margin-right:6px;"></i>Organizer Profile
+        </a>
+        <a href="{{url_for('organizer_update_password')}}"> 
+            <i class="bi bi-key" style="color:black; font-size:18px; margin-right:6px;"></i>Change Password
+        </a>
+        <br><br>
+        <a href="{{ url_for('logout') }}"> 
+            <i class="bi bi-box-arrow-left" style="color:black; font-size:18px; margin-right:6px;"></i>Logout
+        </a>
+    </div>
+
+    <!-------------------------------------------- Side Bar -------------------------------------------------->
+
+    <div class="side-bar">
+        <a href="{{url_for('organizer_dashboard')}}"
+            class="{% if request.endpoint == 'organizer_dashboard' %}active{% endif %}">
+            <i class="bi bi-speedometer2" style="color:black; font-size:18px; margin-right:6px;"></i>Dashboard
+        </a>
+
+        <a href="{{url_for('create_event')}}">
+            <i class="bi bi-pencil-square" style="color:black; font-size:18px; margin-right:6px;"></i>Create Events
+        </a>
+        <a href="{{url_for('org_calendar_view')}}">
+            <i class="bi bi-calendar" style="color:black; font-size:18px; margin-right:6px;"></i>Calendar View
+        </a>
+        <a href="{{url_for('view_registered_students')}}">
+            <i class="bi bi-calendar" style="color:black; font-size:18px; margin-right:6px;"></i>Registered Students
+        </a>
+        <div class="log-out">
+            <a href="{{ url_for('logout') }}"> 
+                <i class="bi bi-box-arrow-left" style="color:black; font-size:18px; margin-right:6px;"></i>Logout
+            </a>
+        </div>
+    </div>
+
+    
+<!-- ================= Organizer Dashboard ================= -->
+<div class="dashboard-container">
+    <h2>Organizer Dashboard</h2>
+    <p>Overview of your organized events and recent activities.</p>
+
+    <!-- Top Statistic Cards -->
+    <div class="dashboard-cards">
+        <div class="card">
+            <div class="card-top">
+                <i class="bi bi-calendar-check"></i>
+                <h3>{{ total_events }}</h3>
+            </div>
+            <p>Total Events Organized</p>
+            <small>Events managed by you.</small>
+        </div>
+
+        <div class="card">
+            <div class="card-top">
+                <i class="bi bi-calendar-event"></i>
+                <h3>{{ upcoming_events }}</h3>
+            </div>
+            <p>Upcoming Events</p>
+            <small>Events scheduled for the future.</small>
+        </div>
+
+        <div class="card">
+            <div class="card-top">
+                <i class="bi bi-people"></i>
+                <h3>{{ total_users }}</h3>
+            </div>
+            <p>Total Users</p>
+            <small>All registered appointment participants.</small>
+        </div>
+    </div>
+
+    <!-- My Events Table -->
+    <div class="dashboard-tables">
+        <div class="recent-activities">
+            <h3>My Events</h3>
+            <table>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Date</th>
+                    <th>Venue</th>
+                    
+                </tr>
+                {% for event in events %}
+                <tr>
+                    <td>{{ event.event_name }}</td>
+                    <td>{{ event.event_date.strftime("%B %d, %Y") }}</td>
+                    <td>{{ event.location}}</td>
+                    
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="recent-activities">
+            <h3>Recent Activities</h3>
+            <table>
+                <tr>
+                    <th>Action</th>
+                    <th>Item</th>
+                    <th>Date</th>
+                </tr>
+                {% for activity in recent_activities %}
+                <tr>
+                    <td>{{ activity.event_type }}</td>
+                    <td>{{ activity.event_name }}</td>
+                    <td>{{ activity.event_date.strftime("%B %d, %Y") }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+    <!-------------------------------------------- Flash Messages -------------------------------------------------->
+    <br><br>
+    <center>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div id="flash-message">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </center>
+    

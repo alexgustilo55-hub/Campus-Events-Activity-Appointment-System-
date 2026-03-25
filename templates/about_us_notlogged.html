@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/campuslogo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='aboutUs.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="{{ url_for('static', filename='flash.js') }}"></script>
+</head>
+<body>
+
+   
+   <!-------------------------------------- NAVBAR -------------------------------------->
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/campuslogo2.png') }}" alt="Logo" height="40">
+            </div>
+
+            <div class="nav-links">
+                <a href="{{url_for('about_us_notlogged')}}"
+                    class="{% if request.endpoint == 'about_us_notlogged' %}active{% endif %}">
+                    About</a>
+                <a href="{{ url_for('register') }}">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ================= About Us Main Content ================= -->
+     <section class="hero-section">
+    <div class="hero-content">
+    <div class="text-column">
+      <h1>Connecting Campus Life,<br>One Event at a Time.</h1>
+      <p>CampusConnect simplifies event discovery, scheduling, and management for students, faculty, and organizations. Experience seamless event experiences tailored to your campus.</p>
+    </div>
+
+    <div class="image-column">
+        <img src="{{ url_for('static', filename='img/ppevent.jpg') }}"
+         alt="Campus Event at PHINMA University of Iloilo">
+  </div>
+</section>
+
+<section class ="main-container">
+    <div class = "mission">
+    <h1>Our Mission</h1><br>
+    </div>
+
+    <div class = "text">
+    <text>CampusConnect is a campus event and activity appointment system designed to streamline event<br>
+    discovery, scheduling, and participation enhancing student engagement and campus life.<br><br>
+    A system that removes barriers to campus event participation by simplifying scheduling,<br>
+    registration, and management for students, staff, and organizations.</text><br><br><br>
+    </div>
+    <body>
+  <div class="features-container">
+    <div class="feature-card">
+      <div class="icon">💡</div>
+      <div class="feature-title">Innovation</div>
+      <div class="feature-description">
+        Constantly seeking new ways to enhance the campus event experience through cutting-edge technology.
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="icon">👥</div>
+      <div class="feature-title">Community</div>
+      <div class="feature-description">
+        Dedicated to fostering strong connections and vibrant interactions across the entire campus ecosystem.
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🛡️</div>
+      <div class="feature-title">Reliability</div>
+      <div class="feature-description">
+        Committed to providing a stable, secure, and dependable platform for all users, always.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+        <section class = "team-section">
+            <h2>Meet Our Dedicated Team</h2>
+            <div class ="team-container">
+        
+
+        <div class="team-member">
+            <img src="{{ url_for('static', filename='img2/luegi.jpg') }}"class="team-photo">
+            <h3>Luegi S. Rivera</h3>
+            <p>Project Manager</p>
+        </div>
+
+
+        <div class="team-member">
+            <img src="{{ url_for('static', filename='img2/alex.jpg') }}"class="team-photo">
+            <h3>Alex R. Gustilo</h3>
+            <p>System Developer</p>
+        </div>
+         <div class="team-member">
+            <img src="{{ url_for('static', filename='img2/christian.jpg') }}"class="team-photo">
+            <h3>Christian A. Dequito</h3>
+            <p>System Analyst</p>
+        </div>
+
+         <div class="team-member">
+            <img src="{{ url_for('static', filename='img2/eritch.jpg') }}"class="team-photo">
+            <h3>Eritch U. Sioson</h3>
+            <p>UI/UX Design</p>
+        </div>
+
+         <div class="team-member">
+            <img src="{{ url_for('static', filename='img2/ellie.jpg') }}"class="team-photo">
+            <h3>Ellie Franz Gabutin</h3>
+            <p>Sponsor</p>
+        </div>
+    <!----------------------------------- FLASH MESSAGES --------------------------------->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="flash-message">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    
+
+</body>
+</html>
