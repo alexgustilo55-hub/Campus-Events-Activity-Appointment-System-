@@ -8,6 +8,8 @@ Sponsor: Ellie Franz Gabutin
 System Analyst: Christian Dequito  
 UI/UX Designer: Eritch Sioson  
 
+From: UI-FB1-BSIT 2-2
+
 
 # Project Description
 The Campus Events & Activity Appointment System is a web-based platform designed to streamline the management of campus events and student appointments. The system replaces manual processes, which often rely on paper forms and spreadsheets, with an efficient digital solution that ensures accuracy, transparency, and real-time updates.
