@@ -2,7 +2,6 @@
 
 Group Name: ECELA  
 Project Manager: Luegi Rivera 
-
 Developer: Alex Gustilo  
 Sponsor: Ellie Franz Gabutin  
 System Analyst: Christian Dequito  
